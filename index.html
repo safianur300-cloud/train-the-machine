@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Train the Machine: Bisakah Mesin Belajar dari Data?</title>
+<style>
+:root{--bg:#f6f7fb;--c:#fff;--t:#1d2433;--m:#5b6475;--p:#0f766e;--p2:#ccfbf1;--j:#b45309;--jb:#fef3c7;--l:#1d4ed8;--lb:#dbeafe;--ok:#15803d;--no:#b91c1c;--bd:#dde1ea}
+*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,Segoe UI,Roboto,sans-serif;background:linear-gradient(#ccfbf1,var(--bg) 320px) var(--bg);color:var(--t)}
+#app{max-width:920px;margin:auto;padding:14px}
+h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.3rem;margin:.2em 0}h3{font-size:1.05rem;margin:.8em 0 .3em}
+.card{background:var(--c);border:1px solid var(--bd);border-radius:14px;padding:16px;margin:12px 0}
+.bar{display:flex;gap:4px;margin-bottom:8px}.bar i{flex:1;font-style:normal;font-size:.66rem;text-align:center;border-bottom:5px solid var(--bd);padding-bottom:2px;color:var(--m);overflow:hidden;white-space:nowrap}.bar i.on{border-color:var(--p);color:var(--p)}.bar i.cur{font-weight:800;border-color:#f59e0b;color:#b45309}.hero{background:linear-gradient(135deg,#0f766e,#1d4ed8);color:#fff;border-radius:16px;padding:18px;margin:8px 0}.hero h1,.hero h2{color:#fff;margin:.15em 0}.hero figcaption,.hero a{color:#e0f2fe}.hero .tag{background:#fff}.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}figure{margin:0}figure img{width:100%;height:170px;object-fit:cover;border-radius:10px;display:block;background:#e2e8f0}figcaption{font-size:.74rem;color:var(--m);margin-top:3px}figure.x img{display:none}figure.x:before{content:'Foto tidak termuat (butuh internet)';display:flex;height:170px;align-items:center;justify-content:center;background:#e2e8f0;border-radius:10px;font-size:.8rem;color:var(--m)}.mt{display:block;height:5px;background:#e2e8f0;border-radius:3px;margin:1px 0 4px}.mt i{display:block;height:100%;border-radius:3px}button{transition:transform .1s}button:not(:disabled):hover{transform:translateY(-1px)}.chip:hover{border-color:var(--p)}.card{box-shadow:0 2px 8px rgba(15,23,42,.05)}
+@media(max-width:480px){.duo figure img,figure.x:before{height:110px}}
+
+.tag{display:inline-block;background:var(--p2);color:#0b4f4a;border-radius:99px;padding:2px 10px;font-size:.8rem;font-weight:600}
+.note{background:#f1f5f9;border-left:4px solid var(--p);padding:10px 12px;border-radius:8px;margin:10px 0;font-size:.95rem}
+.warn{border-left-color:#d97706;background:#fffbeb}
+button{font:inherit;border:0;border-radius:10px;padding:10px 16px;background:var(--p);color:#fff;font-weight:600;cursor:pointer;margin:4px 4px 4px 0}
+button.s{background:#e2e8f0;color:var(--t)}button:disabled{opacity:.45;cursor:not-allowed}
+textarea,input[type=text],select{width:100%;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.s{cursor:pointer}.chip{border:2px solid var(--bd);border-radius:10px;padding:8px;font-size:.88rem;background:#fff;text-align:left;color:var(--t);font-weight:400;margin:0;width:100%}
+.chip.J{border-left:6px solid var(--j)}.chip.L{border-left:6px solid var(--l)}.chip.on{background:var(--p2);border-color:var(--p)}
+.chip b{display:block}.pill{font-size:.75rem;border-radius:99px;padding:1px 8px;font-weight:700}.pJ{background:var(--jb);color:var(--j)}.pL{background:var(--lb);color:var(--l)}
+.item{border:1px solid var(--bd);border-radius:10px;padding:10px;background:#fff}.item img{width:100%;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:.9rem;display:block;overflow-x:auto}th,td{border:1px solid var(--bd);padding:5px 8px;text-align:left}th{background:#f1f5f9}
+.ok{color:var(--ok);font-weight:700}.no{color:var(--no);font-weight:700}.q{margin:12px 0}.q label{display:block;padding:4px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>div{flex:1;min-width:260px}.big{font-size:1.8rem;font-weight:800}
+@media(max-width:480px){#app{padding:8px}.card{padding:12px}}
+
+input[type=radio],input[type=checkbox]{width:22px;height:22px;margin:0 10px 0 0;vertical-align:middle;accent-color:var(--p)}
+label{display:block;padding:8px 2px}.q label{border:1px solid var(--bd);border-radius:10px;padding:10px;margin:6px 0}
+.stick{position:sticky;top:0;z-index:20;background:var(--bg);padding:6px 0 2px}.barcap{display:none;font-size:.85rem;font-weight:700;color:var(--p);margin:3px 0}
+.sticky{position:sticky;top:58px;background:#fff;border:1px solid var(--bd);border-radius:10px;padding:6px 10px;z-index:4;margin:6px 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.toast{position:fixed;left:10px;right:10px;bottom:12px;z-index:50;max-width:900px;margin:auto;background:#92400e;color:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 6px 20px rgba(0,0,0,.3);font-size:.95rem}
+@media(max-width:560px){
+.bar i{font-size:0;padding:0}.barcap{display:block}
+button:not(.chip){width:100%;margin:4px 0;padding:14px 16px}
+.grid{grid-template-columns:1fr 1fr;gap:6px}.chip{padding:6px;font-size:.8rem}
+.row>div{min-width:96px}.big{font-size:1.4rem}.sticky small{display:none}.hero h1{font-size:1.35rem}h2{font-size:1.15rem}
+.hd{display:none}table,tbody{display:block}tr{display:block;border:1px solid var(--bd);border-radius:10px;margin:8px 0;padding:6px 10px;background:#fff}
+td{display:flex;justify-content:space-between;gap:12px;border:0;padding:4px 0;text-align:right}td::before{content:attr(data-l);font-weight:700;color:var(--m);text-align:left;flex:0 0 38%}td[data-l=""]::before{display:none}}
+
+/* ===== v4: lapisan visual ===== */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.role{display:grid;gap:4px;border:2px solid #e6eaf2;border-radius:12px;padding:10px;background:#f8fafc}.role small{color:var(--m)}
+.rolebar{display:flex;flex-direction:column;gap:2px;background:#fff;border:2px solid var(--acc);border-radius:12px;padding:8px 12px;margin:8px 0;font-size:.92rem}.rolebar small{color:var(--m)}
+@media(max-width:560px){.rg{grid-template-columns:1fr}}
+:root{--r:16px;--sh:0 6px 22px rgba(15,23,42,.08);--acc:#0f766e}
+body{background:radial-gradient(900px 380px at 85% -80px,#fde68a55,transparent),radial-gradient(800px 360px at -10% -60px,#99f6e455,transparent),linear-gradient(#ecfeff,#f6f7fb 420px) #f6f7fb}
+h1,h2{letter-spacing:-.01em}
+.card{border-radius:var(--r);box-shadow:var(--sh);border:1px solid #e6eaf2;border-top:5px solid var(--acc)}
+.stp.enter{animation:up .35s ease both}@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.s-b1,.s-b2{--acc:#f97316}.s-b3{--acc:#2563eb}.s-b4{--acc:#7c3aed}.s-b5{--acc:#16a34a}.s-pre,.s-post{--acc:#0f766e}.s-sum{--acc:#d97706}
+.s-b1 .tag,.s-b2 .tag{background:#ffedd5;color:#9a3412}.s-b3 .tag{background:#dbeafe;color:#1e3a8a}.s-b4 .tag{background:#ede9fe;color:#5b21b6}.s-b5 .tag{background:#dcfce7;color:#166534}
+.tag{letter-spacing:.02em}
+.bn{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.7em;border-radius:50%;background:var(--acc);color:#fff;font-size:.8em;margin-right:.45em;vertical-align:middle}
+.stick{backdrop-filter:blur(8px);background:rgba(246,247,251,.88)}
+.bar{counter-reset:st;gap:0;margin:0 0 4px}
+.bar i{counter-increment:st;position:relative;border:0;padding:30px 0 0;font-size:.64rem;font-weight:600}
+.bar i::before{content:counter(st);position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:24px;border-radius:50%;background:#e2e8f0;color:var(--m);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;z-index:1}
+.bar i::after{content:'';position:absolute;top:11px;left:-50%;width:100%;height:3px;background:#e2e8f0}.bar i:first-child::after{display:none}
+.bar i.on::before{content:'✓';background:var(--p);color:#fff}.bar i.on::after,.bar i.cur::after{background:var(--p)}
+.bar i.cur::before{background:#f59e0b;color:#fff;box-shadow:0 0 0 4px #fef3c7}
+@media(max-width:560px){.bar i{font-size:0;padding-top:28px}}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#0f766e,#2563eb 60%,#7c3aed);background-size:160% 160%;animation:bg 14s ease infinite;border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(37,99,235,.25)}
+@keyframes bg{50%{background-position:100% 50%}}
+.hero::after{content:'';position:absolute;right:-60px;bottom:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{font-size:2rem}.hero .bot{position:absolute;right:16px;top:12px;width:84px;height:84px;opacity:.95}
+.hero .tag{background:rgba(255,255,255,.95);color:#0f766e}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 0 4px}.flow b{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:3px 12px;font-size:.85rem}.flow i{font-style:normal;opacity:.8}
+.hero figure img,.duo figure img{border-radius:14px;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.duo figure:nth-child(1) img{transform:rotate(-1.2deg)}.duo figure:nth-child(2) img{transform:rotate(1.2deg)}
+button{border-radius:12px;background:linear-gradient(180deg,#14b8a6,#0f766e);box-shadow:0 3px 0 #0b5b55,0 6px 12px rgba(15,118,110,.25);padding:11px 18px}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #0b5b55}button.s{background:#eef2f7;color:var(--t);box-shadow:0 2px 0 #cbd5e1}button.chip{box-shadow:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
+.chip{border-radius:14px;border:2px solid #e6eaf2;box-shadow:0 2px 6px rgba(15,23,42,.05);transition:transform .12s,box-shadow .12s;position:relative}
+.chip.J{background:linear-gradient(135deg,#fff,#fffbeb);border-left:6px solid var(--j)}.chip.L{background:linear-gradient(135deg,#fff,#eff6ff);border-left:6px solid var(--l)}
+.chip:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(15,23,42,.1)}
+.chip.on{background:var(--p2);border-color:var(--p)}.chip.on::after{content:'✓';position:absolute;right:8px;top:6px;width:22px;height:22px;border-radius:50%;background:var(--p);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.item{border-radius:14px;box-shadow:0 2px 8px rgba(15,23,42,.06);border:1px solid #e6eaf2}
+.mt{height:7px;border-radius:4px;background:#e8edf4}.mt i{border-radius:4px;background-image:linear-gradient(90deg,rgba(255,255,255,.35),rgba(255,255,255,0))!important}
+.note{border-left-width:5px;border-radius:12px;background:linear-gradient(90deg,#f0fdfa,#f8fafc)}.warn{background:#fffbeb}
+.big{font-size:2.2rem;background:linear-gradient(135deg,#0f766e,#2563eb);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+.row>div{background:#f8fafc;border:1px solid #e6eaf2;border-radius:14px;padding:12px;text-align:center}
+table{border-radius:12px}th{background:#eef2f7}tr:nth-child(even) td{background:#fafbfd}td.ok,td.no{font-weight:700}
+.ok{color:#15803d}.no{color:#b91c1c}td.ok{background:#f0fdf4!important}td.no{background:#fef2f2!important}
+.q label{background:#fff;transition:background .1s,border-color .1s}.q label:has(input:checked){background:#f0fdfa;border-color:var(--p)}
+textarea,input[type=text],select{border:2px solid #e6eaf2;border-radius:12px}textarea:focus,input[type=text]:focus,select:focus{border-color:var(--p)}
+.sticky{box-shadow:var(--sh);border-radius:12px;border-color:#e6eaf2}
+details{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;padding:8px 12px;margin:10px 0}summary{cursor:pointer}
+.foot{text-align:center;color:var(--m);font-size:.75rem;margin:18px 0 70px}
+@media(max-width:560px){.hero h1{font-size:1.5rem}.hero .bot{width:56px;height:56px;right:10px;top:10px}.big{font-size:1.7rem}}
+@media(prefers-reduced-motion:reduce){.hero,.stp.enter{animation:none}}
+/* Foto pada kartu uji */
+.sample-photo{display:block;width:100%;height:112px;object-fit:contain;background:#f8fafc;border:1px solid var(--bd);border-radius:8px;margin:5px 0 8px}.test-figure{margin:8px 0 10px}
+.test-photo{width:100%;height:145px;object-fit:contain;background:#f8fafc;border:1px solid var(--bd);border-radius:10px;display:block}
+.test-figure figcaption{font-size:.7rem;line-height:1.3;margin-top:4px;color:var(--m)}
+.test-figure a{color:var(--p)}
+@media(max-width:560px){.test-photo{height:112px}.sample-photo{height:90px}.test-figure figcaption{font-size:.65rem}}
+</style></head><body><div id="app"></div>
+<script>
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LB={J:'Jahe',L:'Lengkuas'};
+const REF={J:{n:'Jahe (Zingiber officinale)',f:'Ginger_Root.jpg',a:'foto: Sanjay Acharya, CC BY-SA'},L:{n:'Lengkuas (Alpinia galanga)',f:'Lengkuas.jpg',a:'foto: Wikimedia Indonesia (WikiKaleidoskop), CC BY-SA 4.0'}};
+// Foto referensi untuk kartu uji. Foto hanya membantu siswa mengamati objek;
+// model simulasi tetap memproses tiga angka ciri sintetis, bukan piksel foto.
+const TEST_PHOTOS={
+ J:{url:'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Ginger_Root.jpg/960px-Ginger_Root.jpg',fallback:'https://commons.wikimedia.org/wiki/Special:FilePath/Ginger_Root.jpg?width=700',page:'https://commons.wikimedia.org/wiki/File:Ginger_Root.jpg',credit:'Sanjay Acharya · CC BY-SA 4.0'},
+ L:{url:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Lengkuas.jpg/960px-Lengkuas.jpg',fallback:'https://commons.wikimedia.org/wiki/Special:FilePath/Lengkuas.jpg?width=700',page:'https://commons.wikimedia.org/wiki/File:Lengkuas.jpg',credit:'Herusutimbul · CC BY-SA 4.0'}
+};
+const photoImg=(s,cls='sample-photo')=>{const p=TEST_PHOTOS[s.y==='J'?'J':'L'];return `<img class="${cls}" src="${p.url}" alt="Foto rimpang untuk diamati" loading="eager" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='${p.fallback}'}else{this.style.display='none'}">`};
+const photoCard=s=>{const p=TEST_PHOTOS[s.y==='J'?'J':'L'];return `<figure class="test-figure">${photoImg(s,'test-photo')}<figcaption hidden>Foto tidak termuat. Periksa koneksi internet.</figcaption><figcaption>Foto referensi · <a href="${p.page}" target="_blank" rel="noopener">sumber &amp; lisensi</a></figcaption></figure>`};
+const ph=k=>{const r=REF[k];return`<figure><img src="https://commons.wikimedia.org/wiki/Special:FilePath/${r.f}?width=700" alt="Foto ${r.n}" loading=lazy onerror="this.parentNode.classList.add('x')"><figcaption><b>${r.n}</b><br>${r.a} · <a href="https://commons.wikimedia.org/wiki/File:${r.f}" target=_blank rel=noopener>sumber di Wikimedia Commons</a></figcaption></figure>`};
+const mt=(v,m,c)=>`<span class=mt><i style="width:${Math.min(100,v/m*100)}%;background:${c}"></i></span>`;
+const meters=f=>`Lebar ${f[0]} cm${mt(f[0],8,'#0f766e')}Cincin ${f[1]}${mt(f[1],10,'#7c3aed')}Merah ${f[2]}${mt(f[2],10,'#dc2626')}`;
+const STL=['','Pra-tes','Kenali','Latih','Uji','Masalah','Perbaiki','Pasca-tes','Ringkas'];
+/* ===== DATA (sintetis, dibuat dari rentang ciri; bukan hasil pengukuran) ===== */
+// Opsional guru: isi URL foto per tipe untuk ditampilkan di kartu, mis. FOTO.jg='foto/jahe-gajah.jpg'
+const FOTO={jg:'',je:'',jm:'',lp:'',lm:''};
+const FN=['Lebar ruas (cm)','Kejelasan cincin (0–10)','Kemerahan kulit (0–10)'],NORM=[8,10,10];
+const SUB={jg:{n:'Jahe gajah',c:'J',r:[[5,7],[2,4],[1,3]]},je:{n:'Jahe emprit',c:'J',r:[[2,3.5],[3,5],[1,3]]},jm:{n:'Jahe merah',c:'J',r:[[2,3.5],[3,5],[6,9]]},lp:{n:'Lengkuas putih',c:'L',r:[[3,5],[7,9],[1,3]]},lm:{n:'Lengkuas merah',c:'L',r:[[3.5,5.5],[4,6.5],[6,9]]}};
+SUB.x={n:'Ukur sendiri',c:'?',r:[]};
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gen(seed,spec,pre){const r=rng(seed),o=[];for(const[k,n]of spec)for(let i=0;i<n;i++){const d=SUB[k];o.push({sub:k,y:d.c,f:d.r.map(([a,b])=>+(a+(b-a)*r()).toFixed(1))})}
+for(let i=o.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[o[i],o[j]]=[o[j],o[i]]}o.forEach((e,i)=>e.id=pre+(i+1));return o}
+const POOL=gen(7,[['jg',8],['je',8],['jm',8],['lp',8],['lm',8]],'P'),TEST=gen(21,[['jg',1],['je',2],['jm',3],['lp',2],['lm',4]],'T'),FIN=gen(33,[['jg',1],['je',2],['jm',2],['lp',2],['lm',2]],'F');
+const byId=id=>POOL.find(p=>p.id==id)||(S.mine||[]).find(p=>p.id==id);
+/* ===== MODEL: k-Nearest Neighbors (k=3), benar-benar dihitung dari data latih ===== */
+let MASK=[1,1,1];const withM=(m,fn)=>{const o=MASK;MASK=m;try{return fn()}finally{MASK=o}};const dist=(a,b)=>Math.sqrt(a.f.reduce((s,v,i)=>s+(MASK[i]?((v-b.f[i])/NORM[i])**2:0),0));
+const near=(tr,x,k=3)=>tr.map(t=>({t,d:dist(t,x)})).sort((a,b)=>a.d-b.d).slice(0,k);
+function predict(tr,x){const n=near(tr,x);let j=0,l=0;n.forEach(e=>e.t.y=='J'?j++:l++);return j>l?'J':'L'}
+function ev(tr,set){const res=set.map(s=>({s,p:predict(tr,s)}));return{res,n:set.length,ok:res.filter(r=>r.p==r.s.y).length,wrong:res.filter(r=>r.p!=r.s.y)}}
+const trOf=ids=>ids.map(byId);
+const validTr=ids=>ids.length>=4&&ids.some(i=>byId(i).y=='J')&&ids.some(i=>byId(i).y=='L');
+const comp=tr=>Object.keys(SUB).filter(k=>k!='x'||tr.some(t=>t.sub=='x')).map(k=>`${SUB[k].n}: ${tr.filter(t=>t.sub==k).length}`).join(' · ');
+const A_SET=[...POOL.filter(p=>p.sub=='je').slice(0,5),...POOL.filter(p=>p.sub=='lp').slice(0,5)];
+const B_SET=Object.keys(SUB).flatMap(k=>POOL.filter(p=>p.sub==k).slice(0,2));
+/* ===== STATE ===== */
+let ENT=0;
+const ROLES=[{k:'a',n:'Pelatih Data',d:'memimpin pemilihan data latih (Babak 2 dan 5) dan memastikan datanya beragam'},{k:'b',n:'Penguji Prediksi',d:'memimpin tebakan dan pembukaan hasil uji (Babak 3)'},{k:'c',n:'Analis Kesalahan',d:'memimpin pencarian penyebab mesin salah (Babak 4)'},{k:'d',n:'Pencatat & Juru Bicara',d:'menulis dugaan dan refleksi kelompok (Babak 1) dan melaporkan hasil ke kelas'}];
+const RB={b1:'d',b2:'a',b3:'b',b4:'c',b5:'a'};
+const peranTxt=()=>ROLES.map(r=>r.n+'='+(S.rl[r.k]||'-')).join('; ');
+const roleBar=st=>{const r=ROLES.find(x=>x.k==RB[st]);if(!r)return'';const n=S.rl[r.k];return`<div class=rolebar><b>Peran bertugas: ${r.n}${n?' — '+esc(n):''}</b><small>Tugas: ${r.d}. Semua anggota tetap berdiskusi sebelum menjawab.</small></div>`};const STEPS=['intro','pre','b1','b2','b3','b4','b5','post','sum'];
+const def=()=>({step:'intro',ff:[1,1,1],ff0:null,ff2:null,ffSet:0,mine:[],fin1:null,kode:'',rl:{a:'',b:'',c:'',d:''},pre:{},preT:'',post:{},postT:'',f:[],hip:'',lock1:0,sel:[],tr:null,lock:{},rev:0,rf:{},why:{},w5:'',tr2:null,msg:''});
+let S;try{S=Object.assign(def(),JSON.parse(localStorage.getItem('ttm')||'{}'))}catch(e){S=def()}
+const save=()=>{try{localStorage.setItem('ttm',JSON.stringify(S))}catch(e){}};
+const go=s=>{S.step=s;ENT=1;S.msg='';save();render();scrollTo(0,0)};
+const set=(k,v)=>{S[k]=v;save()};
+function render(){if(S.step=='b2'&&!S.ffSet){S.ff=S.f.length?FN.map((_,i)=>S.f.includes(i)?1:0):[1,1,1];S.ffSet=1;save()}MASK=S.ff0||S.ff||[1,1,1];const y=scrollY;const i=STEPS.indexOf(S.step);
+document.getElementById('app').innerHTML=`<div class=stick><div class=bar>${STEPS.slice(1).map((_,j)=>`<i class="${j+1<i?'on':''} ${j+1==i?'cur':''}">${STL[j+1]}</i>`).join('')}</div><div class=barcap>${i?`Langkah ${i} dari 8 · ${STL[i]}`:''}</div></div>`+`<div class="stp s-${S.step}${ENT?' enter':''}">`+roleBar(S.step)+V[S.step]().replace(/<h2>Babak (\d) — /g,'<h2><span class=bn>$1</span>')+`</div><p class=foot>Train the Machine · Foto: Wikimedia Commons (CC BY-SA) · Data sintetis untuk pembelajaran</p>`+(S.msg?`<div class=toast onclick="S.msg='';render()">${S.msg} <small>(ketuk untuk menutup)</small></div>`:'');document.querySelectorAll('#app table').forEach(t=>{const h=[...t.rows[0].cells].map(c=>c.textContent.trim());t.rows[0].classList.add('hd');[...t.rows].slice(1).forEach(r=>[...r.cells].forEach((c,i)=>c.setAttribute('data-l',h[i]||'')))});ENT=0;scrollTo(0,y)}
+const chip=(s,o={})=>`<button class="chip ${o.lab?s.y:''} ${o.on?'on':''}" ${o.fn?`onclick="${o.fn}"`:'style="cursor:default"'}>${photoImg(s)}<b>${s.id}${o.lab?` <span class="pill p${s.y}">${LB[s.y]}</span>`:''}</b>${o.tipe?SUB[s.sub].n+'<br>':''}${meters(s.f)}</button>`;
+const refl=(k,p)=>`<h3>Refleksi</h3><p>${p}</p><textarea rows=3 oninput="S.rf['${k}']=this.value;save()">${esc(S.rf[k]||'')}</textarea>`;
+const need=(k,n=30)=>(S.rf[k]||'').trim().length>=n;
+function nxt(k,to,ok=true,m){if(!ok){S.msg=m;render();return}if(k&&!need(k)){S.msg='Tulis refleksimu dulu (minimal satu-dua kalimat).';render();return}go(to)}
+/* ===== PRA/PASCA-TES ===== */
+const QS={pre:[
+{q:'Aplikasi belajar membedakan foto kucing dan anjing. Bagaimana ia "belajar"?',o:['Programmer menulis aturan jika-maka untuk setiap foto','Aplikasi menyimpan semua foto lalu menyalinnya saat diuji','Aplikasi mencari pola dari banyak foto contoh yang sudah berlabel'],a:2},
+{q:'Dari 100 foto, 80 dipakai melatih dan 20 disimpan. Apa fungsi 20 foto itu?',o:['Data uji: contoh baru untuk menilai model setelah dilatih','Data latih tambahan agar model lebih pintar','Cadangan yang dibuang bila model sudah benar'],a:0},
+{q:'Model benar pada 50 dari 50 foto latihnya. Kesimpulan yang paling tepat?',o:['Model pasti benar pada foto baru','Belum tentu benar pada foto baru; perlu diuji dengan data baru','Model tidak mungkin mengandung bias'],a:1},
+{q:'Model pengenal suara dilatih hanya dengan suara laki-laki dewasa dan sering salah pada suara anak. Penyebab paling mungkin?',o:['Komputernya kurang cepat memproses suara','Model sengaja memilih jawaban yang salah','Data latih tidak mewakili suara anak-anak'],a:2},
+{q:'Tim menambah 10.000 foto yang hampir sama dengan data lama. Apakah hasil pasti membaik?',o:['Belum tentu; data yang sejenis tidak menambah variasi yang kurang','Pasti membaik karena jumlah datanya jauh lebih banyak','Pasti memburuk karena data terlalu banyak'],a:0},
+{q:'AI penilai lamaran kerja dilatih dari data pelamar yang diterima dulu. Mengapa hasilnya tetap perlu diperiksa manusia?',o:['Karena AI tidak pernah melakukan kesalahan','Karena pola timpang di data lama bisa terbawa ke keputusan baru','Agar proses seleksi terlihat lebih canggih']  ,a:1}],
+post:[
+{q:'Komputer belajar mengenali angka tulisan tangan. Bagaimana prosesnya?',o:['Manusia menulis bentuk setiap angka sebagai aturan tetap','Komputer mencari pola dari banyak contoh angka yang sudah berlabel','Komputer meniru contoh persis tanpa mencari pola apa pun'],a:1},
+{q:'Dari 200 rekaman, 150 dipakai melatih dan 50 disimpan untuk menilai. Apa 50 rekaman itu?',o:['Data latih cadangan untuk berjaga-jaga','Sisa data yang tidak berguna bagi model','Data uji: contoh baru untuk menilai model'],a:2},
+{q:'Model benar pada 80 dari 80 contoh latihnya, tetapi salah pada banyak contoh baru. Apa artinya?',o:['Model hanya bagus pada data yang pernah dilihat; perlu data lebih beragam dan pengujian baru','Model sudah sempurna dan contoh barunya yang keliru','Model tidak membutuhkan data baru lagi'],a:0},
+{q:'Pengenal wajah dilatih terutama dengan foto berpencahayaan terang dan sering gagal di ruangan redup. Perbaikan paling tepat?',o:['Menambah foto terang sebanyak mungkin','Menambah foto dengan berbagai kondisi cahaya, lalu menguji lagi','Mengganti nama aplikasinya'],a:1},
+{q:'Tim memperbanyak data latih dengan menyalin contoh yang sudah ada. Apakah model pasti lebih baik?',o:['Pasti lebih baik karena jumlah datanya naik','Pasti lebih buruk karena ada data ganda','Belum tentu; salinan tidak menambah variasi baru'],a:2},
+{q:'AI penilai esai dilatih dari esai sekolah kota berbahasa baku, lalu dipakai di sekolah lain. Mengapa perlu pemeriksaan manusia?',o:['Gaya bahasa yang berbeda bisa dinilai rendah padahal isinya baik','Karena AI selalu lebih lambat daripada manusia','Agar nilai dari AI tidak perlu dipercaya sama sekali'],a:0}]};
+const quiz=k=>`${QS[k].map((q,i)=>`<div class=q><b>${i+1}. ${q.q}</b>${[...q.o,'Tidak tahu'].map((o,j)=>`<label><input type=radio name="${k}${i}" ${S[k][i]===j?'checked':''} onchange="S['${k}'][${i}]=${j};save()"> ${o}</label>`).join('')}</div>`).join('')}<div class=q><b>7. Jelaskan dengan kata-katamu: apa hubungan data, pelatihan, model, dan prediksi?</b><textarea rows=3 oninput="S['${k}T']=this.value;save()">${esc(S[k+'T'])}</textarea></div>`;
+const score=k=>QS[k].filter((q,i)=>S[k][i]===q.a).length;
+const done=k=>Object.keys(S[k]).length==QS[k].length&&S[k+'T'].trim().length>=10;
+/* ===== TAMPILAN PER LANGKAH ===== */
+const picker=()=>{const t=trOf(S.sel);return`<p class=sticky><b>${S.sel.length} data dipilih</b> — Jahe: ${t.filter(x=>x.y=='J').length}, Lengkuas: ${t.filter(x=>x.y=='L').length}<br><small>${comp(t)}</small></p><div class=grid>${POOL.concat(S.mine||[]).map(p=>chip(p,{lab:1,tipe:1,on:S.sel.includes(p.id),fn:`tog('${p.id}')`})).join('')}</div>`};
+const reveal=()=>{const e=ev(trOf(S.tr),TEST);S.rev=1;S.base={ok:e.ok,n:e.n,tr:S.tr.length};save();render()};
+const tog=id=>{S.sel=S.sel.includes(id)?S.sel.filter(x=>x!=id):[...S.sel,id];save();render()};
+const cmpRow=(n,tr)=>{const e=ev(tr,TEST),er={};e.wrong.forEach(w=>{const k=SUB[w.s.sub].n+' → '+LB[w.p];er[k]=(er[k]||0)+1});return`<tr><td><b>${n}</b></td><td>${tr.length}<br><small>${comp(tr)}</small></td><td class=ok>${e.ok}</td><td class=no>${e.n-e.ok}</td><td>${Object.entries(er).map(([k,v])=>`${k} (${v}×)`).join('<br>')||'—'}</td></tr>`};
+const RS=['Tipe sampel ini sedikit atau tidak ada di data latih','Cirinya mirip dengan kategori lain','Mesin sengaja memilih salah','Jumlah contoh kedua kategori tidak sama'];
+const ftog=()=>FN.map((n,i)=>`<label><input type=checkbox ${S.ff[i]?'checked':''} onchange="S.ff[${i}]=this.checked?1:0;save()"> ${n}</label>`).join('');
+const addMine=()=>{const v=id=>document.getElementById(id).value,n=x=>parseFloat(String(x).replace(',','.'));const f=[n(v('mw')),n(v('mc')),n(v('mr'))];if(f.some(x=>isNaN(x))||f[0]<0.5||f[0]>12||f[1]<0||f[1]>10||f[2]<0||f[2]>10){S.msg='Isi tiga angka: lebar 0,5–12 cm; cincin dan kemerahan 0–10.';render();return}S.mine.push({id:'M'+(S.mine.length+1),sub:'x',y:v('my'),f});S.msg='';save();render()};
+const mineForm=()=>`<details><summary><b>Tambah sampel hasil ukurmu sendiri (opsional)</b></summary><p><small>Ukur rimpang nyata: lebar ruas (cm), kejelasan cincin (0–10), kemerahan kulit (0–10). Sampel ini hanya menjadi data latih.</small></p><div class=g2><div><select id=my><option value=J>Jahe</option><option value=L>Lengkuas</option></select></div><div><input id=mw type=text inputmode=decimal placeholder="Lebar (cm)"></div><div><input id=mc type=text inputmode=decimal placeholder="Cincin 0–10"></div><div><input id=mr type=text inputmode=decimal placeholder="Merah 0–10"></div></div><button class=s onclick="addMine()">Tambah sampel</button> ${(S.mine||[]).length} sampel ditambahkan</details>`;
+const dl=()=>{const b=S.base,a=S.tr2?withM(S.ff2,()=>ev(trOf(S.tr2),TEST)):null,F=S.fin1,q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',nm=m=>FN.filter((_,i)=>m&&m[i]).join('+');const H=['kelompok','pra','pasca','b3_benar','b3_n','tebakan_benar','latih_awal','latih_akhir','uji_ulang_benar','uji_akhir_sebelum','uji_akhir_sesudah','ciri_awal','ciri_akhir','sampel_ukur','peran'];const R=[S.kode,score('pre'),score('post'),b?b.ok:'',b?b.n:'',TEST.filter(t=>S.lock[t.id]==t.y).length,S.tr?S.tr.length:'',S.tr2?S.tr2.length:'',a?a.ok:'',F?F.b:'',F?F.a:'',nm(S.ff0),nm(S.ff2),S.mine.length,peranTxt()];const u=URL.createObjectURL(new Blob(['\ufeff'+H.join(',')+'\n'+R.map(q).join(',')],{type:'text/csv'})),x=document.createElement('a');x.href=u;x.download='rekap-'+(S.kode||'kelompok').replace(/[^\w-]+/g,'_')+'.csv';x.click()};
+const V={
+intro:()=>`<div class=hero><svg class=bot viewBox="0 0 100 100" aria-hidden=true><line x1=50 y1=8 x2=50 y2=22 stroke=#fff stroke-width=4 /><circle cx=50 cy=8 r=5 fill=#fde68a /><rect x=16 y=22 width=68 height=56 rx=16 fill=#fff /><circle cx=36 cy=47 r=8 fill=#0f766e /><circle cx=64 cy=47 r=8 fill=#2563eb /><circle cx=38 cy=45 r=2.5 fill=#fff /><circle cx=66 cy=45 r=2.5 fill=#fff /><rect x=34 y=62 width=32 height=6 rx=3 fill=#7c3aed /><rect x=8 y=40 width=8 height=18 rx=4 fill=#fde68a /><rect x=84 y=40 width=8 height=18 rx=4 fill=#fde68a /></svg><span class=tag>Koding &amp; Kecerdasan Artifisial · Kelas X</span><h1>Train the Machine</h1><h2>Bisakah mesin belajar dari data?</h2><div class=flow><b>Data</b><i>→</i><b>Pelatihan</b><i>→</i><b>Model</b><i>→</i><b>Prediksi</b></div><div class=duo>${ph('J')}${ph('L')}</div></div><div class=card><p>Kamu menjadi <b>pelatih mesin</b>. Tugasmu: melatih mesin membedakan <b>jahe</b> dan <b>lengkuas</b>, menguji hasilnya, menemukan kesalahannya, lalu memperbaikinya.</p>
+<div class="note"><b>Jujur soal sistem ini:</b> mesin di game ini adalah model Machine Learning <b>sungguhan</b> (k-Nearest Neighbors, k=3) yang dihitung di browsermu dari data yang <i>kamu</i> pilih. Namun mesin tidak "melihat foto": ia membaca 3 angka ciri tiap contoh (lebar ruas, kejelasan cincin, kemerahan kulit). Angka-angka itu adalah <b>data buatan (sintetis)</b> berdasarkan gambaran umum jahe dan lengkuas, bukan hasil pengukuran nyata. Pada ML gambar sungguhan, ciri tersebut dipelajari sendiri dari piksel.</div>
+<p>Foto referensi memerlukan internet; tanpa internet, foto diganti kotak abu-abu dan game tetap berfungsi penuh. Game tidak meminta kamera atau data pribadi; cukup nama kelompok dan nama panggilan atau inisial. Progres tersimpan di perangkat ini saja.</p>
+<h3>Kelompokmu</h3><label>Nama kelompok<input type=text maxlength=30 placeholder="mis. Kelompok Rimpang" value="${esc(S.kode)}" oninput="set('kode',this.value)"></label>
+<p><small>Tulis siapa memegang peran apa. Pakai nama panggilan atau inisial saja. Kelompok kurang dari 4 orang boleh merangkap peran, dan satu perangkat dipakai bersama.</small></p>
+<div class=rg>${ROLES.map(r=>`<div class=role><b>${r.n}</b><small>${r.d}</small><input type=text maxlength=20 placeholder="Nama panggilan / inisial" value="${esc(S.rl[r.k])}" oninput="S.rl['${r.k}']=this.value;save()"></div>`).join('')}</div>
+<button onclick="if(!S.kode.trim()){S.msg='Isi nama kelompok dulu.';render()}else go('pre')">Mulai</button><button class=s onclick="if(confirm('Hapus semua progres?')){S=def();save();render()}">Mulai ulang</button></div>`,
+pre:()=>`<div class=card><h2>Pra-tes</h2><p>Jawab sebisamu. Ini untuk melihat apa yang sudah kamu pahami sebelum bermain, bukan untuk dinilai. Jika belum tahu, pilih Tidak tahu; jangan menebak.</p>${quiz('pre')}<button onclick="nxt(0,'b1',done('pre'),'Jawab semua soal dan isi soal 7 (minimal satu kalimat).')">Lanjut ke Babak 1</button></div>`,
+b1:()=>{const ex=Object.keys(SUB).flatMap(k=>POOL.filter(p=>p.sub==k).slice(0,2));return`<div class=card><span class=tag>Pengalaman konkret</span><h2>Babak 1 — Kenali Data</h2><div class=duo>${ph('J')}${ph('L')}</div><div class=note>Foto hanya gambaran umum tiap kategori. Mesin <b>tidak melihat foto</b>: ia hanya membaca tiga angka ciri pada kartu di bawah, dan tiap tipe (gajah, emprit, merah, putih) bisa tampak berbeda dari foto.</div><p>Amati contoh berlabel ini. Setiap contoh punya tiga ciri.</p><div class=grid>${ex.map(p=>chip(p,{lab:1,tipe:1})).join('')}</div>
+<h3>Menurutmu, informasi apa yang dapat membantu mesin membedakan keduanya?</h3>${FN.map((n,i)=>`<label><input type=checkbox ${S.f.includes(i)?'checked':''} ${S.lock1?'disabled':''} onchange="S.f=this.checked?[...S.f,${i}]:S.f.filter(x=>x!=${i});save()"> ${n}</label>`).join('')}<label><input type=checkbox disabled> Nomor sampel (P1, P2, …) — bukan ciri objek, tidak dipilih</label>
+<p>Tulis dugaanmu (apa pola yang kamu lihat?):</p><textarea rows=2 ${S.lock1?'disabled':''} oninput="S.hip=this.value;save()">${esc(S.hip)}</textarea>
+${S.lock1?'':`<button onclick="if(!S.f.length||S.hip.trim().length<10){S.msg='Pilih minimal satu ciri dan tulis dugaanmu.';render()}else{S.lock1=1;S.msg='';save();render()}">Kunci dugaan &amp; lihat sebaran data</button>`}</div>
+${S.lock1?`<div class=card><span class=tag>Observasi reflektif</span><h3>Sebaran ciri pada ${POOL.length} contoh (min–maks)</h3><table><tr><th>Ciri</th><th>Jahe</th><th>Lengkuas</th></tr>${FN.map((n,i)=>{const r=y=>{const v=POOL.filter(p=>p.y==y).map(p=>p.f[i]);return Math.min(...v)+' – '+Math.max(...v)};return`<tr><td>${n}</td><td>${r('J')}</td><td>${r('L')}</td></tr>`}).join('')}</table>
+<div class=note>Perhatikan rentang yang <b>tumpang-tindih</b>: tidak ada satu ciri yang memisahkan kedua kategori dengan sempurna. Itu sebabnya mesin bisa salah.</div>${refl('b1','Apakah dugaanmu sesuai dengan sebaran data? Apa yang mengejutkan?')}<button onclick="nxt('b1','b2')">Lanjut ke Babak 2</button></div>`:''}`},
+b2:()=>`<div class=card><span class=tag>Pengalaman konkret</span><h2>Babak 2 — Latih Mesin</h2><p>Pilih contoh berlabel sebagai <b>data pelatihan</b> (minimal 4, harus ada kedua kategori). Mesin hanya akan belajar dari yang kamu pilih. Perhatikan komposisi pilihanmu.</p><h3>Ciri yang dipakai mesin</h3>${ftog()}${mineForm()}${picker()}<button class=s onclick="S.sel=POOL.filter(p=>p.sub=='je').slice(0,7).concat(POOL.filter(p=>p.sub=='lp').slice(0,2)).map(p=>p.id);save();render()">Muat contoh set tidak seimbang</button><button class=s onclick="S.sel=[];save();render()">Kosongkan</button><br>
+<button onclick="if(!validTr(S.sel)){S.msg='Pilih minimal 4 data dan pastikan ada Jahe dan Lengkuas.';render()}else if(!S.ff.some(x=>x)){S.msg='Aktifkan minimal satu ciri.';render()}else{S.tr=[...S.sel];S.ff0=[...S.ff];S.lock={};S.rev=0;S.tr2=null;S.fin1=null;S.why={};S.msg='';save();render()}">Jalankan pelatihan</button></div>
+${S.tr?`<div class=card><span class=tag>Observasi reflektif</span><h3>Ringkasan pelatihan</h3><p>Mesin menyimpan <b>${S.tr.length}</b> contoh latih. ${comp(trOf(S.tr))}</p>${(()=>{const e=ev(trOf(S.tr),trOf(S.tr));return`<p>Akurasi pada <b>data latih</b> sendiri: <b>${e.ok}/${e.n}</b>. Ingat: ini belum membuktikan mesin bisa mengenali contoh baru.</p>`})()}${refl('b2','Apa yang kamu pertimbangkan saat memilih data pelatihan? Apakah pilihanmu sudah beragam?')}<button onclick="nxt('b2','b3')">Lanjut ke Babak 3</button></div>`:''}`,
+b3:()=>{const tr=trOf(S.tr),all=TEST.every(t=>S.lock[t.id]);return`<div class=card><span class=tag>Observasi reflektif</span><h2>Babak 3 — Uji Prediksi</h2><p>Ini ${TEST.length} contoh <b>baru</b> yang tidak ada di data latih. Label disembunyikan. Amati tiga angka ciri pada setiap kartu, lalu prediksi: jahe atau lengkuas? Setelah dikunci, tebakan tidak bisa diubah.</p><div class=note><b>Petunjuk:</b> pada babak ini, mesin membuat prediksi berdasarkan tiga angka ciri: lebar ruas, kejelasan cincin, dan kemerahan kulit. Foto tidak ditampilkan agar kamu fokus menguji pola data yang digunakan mesin.</div><div class=grid>${TEST.map(t=>`<div class=item><b>${t.id}</b><div class="note" style="margin:6px 0"><b>Sampel uji ${t.id}</b><br>Gunakan angka ciri berikut untuk membuat prediksi.</div>${meters(t.f)}${S.lock[t.id]?`<small>Tebakanmu terkunci: <b>${LB[S.lock[t.id]]}</b></small>`:`<button class=s onclick="S.lock['${t.id}']='J';save();render()">Jahe</button><button class=s onclick="S.lock['${t.id}']='L';save();render()">Lengkuas</button>`}</div>`).join('')}</div>
+<p>${Object.keys(S.lock).length}/${TEST.length} terkunci</p><button ${all?'':'disabled'} onclick="reveal()">Jalankan mesin &amp; buka hasil</button></div>
+${S.rev?(()=>{const e=ev(tr,TEST),me=TEST.filter(t=>S.lock[t.id]==t.y).length,tra=ev(tr,tr);return`<div class=card><h3>Hasil pengujian</h3><div class=row><div>Mesin pada data baru<div class=big>${e.ok}/${e.n}</div></div><div>Mesin pada data latih<div class=big>${tra.ok}/${tra.n}</div></div><div>Tebakanmu<div class=big>${me}/${TEST.length}</div></div></div>
+<table><tr><th>ID</th><th>Tipe</th><th>Tebakanmu</th><th>Mesin</th><th>Label asli</th><th>Mesin</th></tr>${e.res.map(r=>`<tr><td>${r.s.id}</td><td>${SUB[r.s.sub].n}</td><td>${LB[S.lock[r.s.id]]}</td><td>${LB[r.p]}</td><td>${LB[r.s.y]}</td><td class="${r.p==r.s.y?'ok':'no'}">${r.p==r.s.y?'✔ benar':'✘ salah'}</td></tr>`).join('')}</table>
+<div class=note>Keberhasilan pada data latih tidak otomatis berarti berhasil pada data baru. Bandingkan kedua angka di atas. Set uji ini hanya ${TEST.length} contoh, jadi satu kesalahan saja sangat memengaruhi angkanya.</div>${refl('b3','Mengapa mesin salah pada beberapa contoh? Apakah hasil pada data latih menjamin hasil pada data baru?')}<button onclick="nxt('b3','b4')">Lanjut ke Babak 4</button></div>`})():''}`},
+b4:()=>{const tr=trOf(S.tr),e=ev(tr,TEST),W=e.wrong.slice(0,5);return`<div class=card><span class=tag>Observasi reflektif → Konseptualisasi</span><h2>Babak 4 — Temukan Masalah</h2><p>Modelmu salah pada <b>${e.wrong.length}</b> dari ${e.n} contoh uji. Jelaskan kemungkinan penyebabnya, bukan sekadar menebak jawaban.</p>${W.length?W.map(w=>{const nb=near(tr,w.s),ans=S.why[w.s.id];return`<div class=item style="margin:8px 0"><b>${w.s.id}</b> (${SUB[w.s.sub].n}; label asli ${LB[w.s.y]}, diprediksi ${LB[w.p]})<div class="note" style="margin:6px 0"><b>Data ciri sampel</b></div><br>Lebar ${w.s.f[0]} · Cincin ${w.s.f[1]} · Merah ${w.s.f[2]}<select onchange="S.why['${w.s.id}']=this.value;save();render()"><option value="">Pilih penyebab yang paling mungkin…</option>${RS.map((r,i)=>`<option value=${i} ${ans==i?'selected':''}>${r}</option>`).join('')}</select>${ans!==undefined&&ans!==''?`<div class=note>Bukti dari data: mesin punya <b>${S.tr.filter(i=>byId(i).sub==w.s.sub).length}</b> contoh ${SUB[w.s.sub].n} di data latihmu. Tiga tetangga terdekat: ${nb.map(n=>`${n.t.id} (${SUB[n.t.sub].n}, ${LB[n.t.y]})`).join(', ')}. Mesin memilih mayoritas tetangga, bukan "sengaja" salah.</div>`:''}</div>`}).join(''):'<div class=note>Modelmu tidak salah pada data uji ini. Lanjutkan ke perbandingan di bawah untuk melihat apakah kondisi data lain membuat perbedaan.</div>'}</div>
+<div class=card><h3>Eksperimen bias: dua kondisi, data uji yang sama</h3><p><b>A</b>: hanya jahe emprit &amp; lengkuas putih. <b>B</b>: dua contoh dari tiap tipe.</p><table><tr><th>Kondisi</th><th>Data latih</th><th>Benar</th><th>Salah</th><th>Jenis kesalahan</th></tr>${cmpRow('A (terbatas)',A_SET)}${cmpRow('B (beragam)',B_SET)}${cmpRow('Pilihanmu',tr)}</table>
+<div class=note><b>Rangkuman konsep.</b> Mesin belajar pola dari data latih; prediksinya hanya sebaik data yang dipelajari. Tipe yang kurang terwakili (misalnya yang berkulit kemerahan) lebih mudah salah. Bias tidak hanya soal jumlah per kategori, tapi juga <i>keterwakilan</i>, kualitas data, dan pilihan ciri. Manusia perlu menguji dan menilai hasilnya.<br><small>Catatan: pada data kecil ini, hasil bisa berbeda jika sampel dipilih berbeda; satu percobaan bukan bukti mutlak.</small></div>
+${refl('b4','Tipe atau kondisi apa yang kurang terwakili dalam data latih? Bagaimana hal itu dapat memengaruhi keputusan AI di dunia nyata?')}${refl('b4e','Jika model seperti ini dipakai untuk menyaring lamaran kerja atau beasiswa, siapa yang bisa dirugikan bila datanya timpang, dan siapa yang bertanggung jawab memeriksanya?')}<button onclick="nxt('b4','b5',(${W.length==0}||Object.keys(S.why).length>0)&&need('b4e'),'Pilih penyebab untuk minimal satu kesalahan dan isi kedua refleksi (min. 30 karakter).')">Lanjut ke Babak 5</button></div>`},
+b5:()=>{const b=S.base,aft=S.tr2?withM(S.ff2,()=>ev(trOf(S.tr2),TEST)):null,old=withM(S.ff0,()=>ev(trOf(S.tr),TEST)),d=aft?aft.ok-b.ok:0,F1=S.fin1;
+const ch=aft?TEST.filter(t=>(old.res.find(r=>r.s.id==t.id).p==t.y)!=(aft.res.find(r=>r.s.id==t.id).p==t.y)).map(t=>`<small>${t.id} (${SUB[t.sub].n}): ${old.res.find(r=>r.s.id==t.id).p==t.y?'benar → salah':'salah → benar'}</small><br>`).join(''):'';
+return`<div class=card><span class=tag>Eksperimen aktif</span><h2>Babak 5 — Perbaiki dan Uji Kembali</h2><p>Ubah ciri dan/atau komposisi data latihmu berdasarkan temuanmu, jelaskan alasannya, lalu latih ulang dan uji pada ${TEST.length} contoh yang sama.</p><h3>Ciri yang dipakai mesin</h3>${ftog()}${picker()}<button class=s onclick="S.sel=[...S.tr];S.ff=[...S.ff0];save();render()">Kembali ke pengaturan awalku</button>
+<p>Alasan perubahanmu:</p><textarea rows=2 ${F1?'disabled':''} oninput="S.w5=this.value;save()">${esc(S.w5)}</textarea><br><button ${F1?'disabled':''} onclick="if(!validTr(S.sel)||S.w5.trim().length<10||!S.ff.some(x=>x)){S.msg='Pilih data valid (min. 4, ada kedua kategori), aktifkan minimal satu ciri, dan tulis alasanmu.';render()}else{S.tr2=[...S.sel];S.ff2=[...S.ff];S.msg='';save();render()}">Latih ulang &amp; uji</button></div>
+${aft?`<div class=card><h3>Sebelum vs sesudah (set uji yang sama)</h3><table><tr><th></th><th>Data latih</th><th>Benar pada data uji</th></tr><tr><td>Sebelum</td><td>${b.tr}</td><td>${b.ok}/${b.n}</td></tr><tr><td>Sesudah</td><td>${S.tr2.length}</td><td>${aft.ok}/${aft.n}</td></tr></table><p><b>${d>0?'Membaik':d<0?'Memburuk':'Tetap'}</b> (${d>0?'+':''}${d} contoh).</p>${ch}<div class=note><b>Awas:</b> set uji ini sudah kamu lihat. Jika kamu mengubah data sampai angkanya bagus, mesin bisa jadi hanya disesuaikan dengan set uji ini. Karena itu ada uji akhir pada data yang belum pernah kamu lihat.</div></div>
+<div class=card><h3>Uji akhir (data yang belum pernah dilihat)</h3>${F1?`<table><tr><th></th><th>Benar pada ${F1.n} contoh baru</th></tr><tr><td>Mesin awal</td><td>${F1.b}/${F1.n}</td></tr><tr><td>Mesin setelah perbaikan</td><td>${F1.a}/${F1.n}</td></tr></table><div class=note>Bandingkan dengan hasil pada set uji lama. Apakah perbaikanmu juga berhasil pada data baru? Set ini kecil, jadi satu percobaan bukan bukti mutlak.</div>${refl('b5','Apa yang kamu ubah dan mengapa? Apakah hasil uji akhir sama dengan hasil pada set uji lama? Mengapa uji akhir hanya boleh dibuka sekali?')}<button onclick="nxt('b5','post',1)">Lanjut ke Pasca-tes</button>`:`<p>Uji akhir hanya bisa dibuka <b>sekali</b>. Setelah dibuka, pengaturanmu terkunci.</p><button onclick="S.fin1={b:withM(S.ff0,()=>ev(trOf(S.tr),FIN)).ok,a:withM(S.ff2,()=>ev(trOf(S.tr2),FIN)).ok,n:FIN.length};save();render()">Buka uji akhir (sekali saja)</button>`}</div>`:''}`},
+post:()=>`<div class=card><h2>Pasca-tes</h2><p>Jawab berdasarkan pemahamanmu sekarang. Soalnya berbeda dari pra-tes, tetapi konsepnya sama. Jika belum tahu, pilih Tidak tahu.</p>${quiz('post')}<button onclick="nxt(0,'sum',done('post'),'Jawab semua soal dan isi soal 7.')">Lihat ringkasan</button></div>`,
+sum:()=>{const t=teacher();return`<div class=card><h2>Ringkasan hasil belajar</h2><div class=row><div>Pra-tes<div class=big>${score('pre')}/${QS.pre.length}</div></div><div>Pasca-tes<div class=big>${score('post')}/${QS.pre.length}</div></div><div>Selisih<div class=big>${score('post')-score('pre')>0?'+':''}${score('post')-score('pre')}</div></div></div>
+<div class=note><b>Yang kamu alami:</b> mesin belajar dari contoh yang kamu pilih, bisa salah pada tipe yang kurang terwakili, dan perlu diuji serta diperbaiki. Keterbatasan: data di sini kecil, sintetis, dan hanya 3 ciri, jadi ini model sederhana untuk memahami konsep, bukan pengganti ML gambar sungguhan.</div>
+<h3>Ringkasan untuk guru (salin &amp; tempel)</h3><textarea id=tx rows=12 readonly>${esc(t)}</textarea><button onclick="const x=document.getElementById('tx');x.select();try{navigator.clipboard.writeText(x.value)}catch(e){document.execCommand('copy')}this.textContent='Tersalin ✔'">Salin ringkasan</button><button class=s onclick="dl()">Unduh rekap (CSV)</button><button class=s onclick="if(confirm('Mulai putaran baru dari Babak 1? Pra-tes dan pasca-tes tetap tersimpan.')){const{pre,preT,post,postT,kode,rl}=S;S=Object.assign(def(),{pre,preT,post,postT,kode,rl});save();go('b1')}">Main lagi dari Babak 1</button></div>`}};
+function teacher(){const b=S.base,a=S.tr2?withM(S.ff2,()=>ev(trOf(S.tr2),TEST)):null,sc=k=>QS[k].map((q,i)=>S[k][i]===q.a?'✔':'✘').join(' ');
+return`RINGKASAN TRAIN THE MACHINE — Kelompok: ${S.kode||'(tanpa nama)'}
+Peran: ${peranTxt()}
+Pra-tes: ${score('pre')}/${QS.pre.length} [${sc('pre')}] | Pasca-tes: ${score('post')}/${QS.pre.length} [${sc('post')}] | Selisih: ${score('post')-score('pre')}
+Uraian pra-tes: ${S.preT}
+Uraian pasca-tes: ${S.postT}
+Babak 1 — ciri dipilih: ${S.f.map(i=>FN[i]).join('; ')}; dugaan: ${S.hip}
+Babak 2 — data latih awal: ${S.tr?S.tr.length+' contoh ('+comp(trOf(S.tr))+')':'-'}
+Babak 3 — benar pada data baru: ${b?b.ok+'/'+b.n:'-'}; tebakan siswa benar: ${TEST.filter(t=>S.lock[t.id]==t.y).length}/${TEST.length}
+Babak 4 — penyebab dipilih siswa: ${Object.entries(S.why).map(([k,v])=>k+'='+RS[v]).join('; ')||'-'}
+Babak 5 — data latih akhir: ${S.tr2?S.tr2.length+' contoh ('+comp(trOf(S.tr2))+')':'-'}; benar: ${a?a.ok+'/'+a.n:'-'}; alasan: ${S.w5}
+Refleksi B1: ${S.rf.b1||'-'}
+Refleksi B2: ${S.rf.b2||'-'}
+Refleksi B3: ${S.rf.b3||'-'}
+Refleksi B4: ${S.rf.b4||'-'}
+Refleksi B4 (etika): ${S.rf.b4e||'-'}
+Refleksi B5: ${S.rf.b5||'-'}
+Uji akhir (data baru, sekali): ${S.fin1?'sebelum '+S.fin1.b+'/'+S.fin1.n+', sesudah '+S.fin1.a+'/'+S.fin1.n:'-'}
+Ciri aktif awal: ${FN.filter((_,i)=>S.ff0&&S.ff0[i]).join('; ')||'-'} | akhir: ${FN.filter((_,i)=>S.ff2&&S.ff2[i]).join('; ')||'-'} | sampel ukur sendiri: ${S.mine.length}`}
+render();
+</script></body></html>
